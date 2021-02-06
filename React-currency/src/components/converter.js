@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
 import clsx from 'clsx';
@@ -6,6 +6,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Logo from './pogo.png'
 import Chogo from './Chogo.png'
 import { makeStyles } from '@material-ui/core/styles';
+
 import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles((theme) => ({
@@ -44,7 +45,83 @@ const useStyles = makeStyles((theme) => ({
   }));
   
 export default function Converter() {
+  const { JSDOM } = require( "jsdom" );
+const { window } = new JSDOM( "" );
+const $ = require( "jquery" )( window );
     const classes = useStyles();
+    const axios = require('axios');
+    const [result, setResult] = useState(null);
+    const [state, setState] = useState({
+		
+      //input_currency_type: 'USD',
+      input_currency_amount : 0,
+      //output_currency_type : 'BTC',
+      output_currency_amount :0
+      
+      
+      });
+      const [type, setType] = useState({
+        inputType : 'USD', 
+        outputType : 'BTC'
+      });
+
+      const onTypeChange = event =>{
+        setResult({
+          success: true
+          
+          });
+        const {name, value} =event.target;
+        console.log("Type chnaged : ", name, value);
+
+        setType({
+          ...type,
+          [name] : value
+        });
+      }
+
+      const  onInputChange = async event => {
+       
+        const { name, value } = event.target;
+        console.log(name, value);
+      
+         setState({
+          ...state,
+          [name]: value
+        });
+        var config = {
+            method: 'get',
+            url: 'https://api.cryptonator.com/api/ticker/'+type.outputType+'-'+type.inputType,
+            
+          };
+          
+          await axios(config)
+          .then(function (response) {
+
+           //  console.log(response.data);
+           // console.log(value/response.data.ticker.price);
+            if(response.data.success)
+            {
+                setState({
+                  input_currency_amount : value,
+                output_currency_amount : value/response.data.ticker.price
+                })
+            }
+            else
+            {
+              setResult({
+                success: false,
+                message: 'Please select different currencies'
+                });
+            }
+           })
+          .catch(function (error) {
+            console.log("This is error : "+error);
+          });
+        
+
+        };
+
+        
     return (
         <React.Fragment>
             <AppBar position="absolute" className={clsx(classes.appBar)}>
@@ -72,67 +149,60 @@ export default function Converter() {
              <Typography component="p" variant="p" className="emp-tag " style={{position: 'absolute' , top : 20 , left: 20}}>
              Swap
             </Typography>
+            {result && (
+                <p className={`${result.success ? 'success' : 'error'}`}>
+                {result.message}
+                </p>
+                )}
             <i class="fa fa-cogs" style={{position: 'absolute' , top : 20 , right: 20}} aria-hidden="true"></i>
         <div class="currency">
           <div className="d-flex mt-4">
+                
            <img src={Logo} className="mt-2" height="25px" width="25px"/>
-            <select name="" id="input_currency">
-                            <option value="COP">COP</option>
-                            <option value="CZK">CZK</option>
-                            <option value="DKK">DKK</option>
-                            <option value="DOP">DOP</option>
-                            <option value="EGP">EGP</option>
-                            <option value="EUR" selected>ETH</option>
-                            <option value="FJD">FJD</option>
-                            <option value="GBP">GBP</option>
-                            <option value="SAR">SAR</option>
-                            <option value="SEK">SEK</option>
-                            <option value="SGD">SGD</option>
-                            <option value="THB">THB</option>
-                            <option value="TRY">TRY</option>
-                            <option value="TWD">TWD</option>
-                            <option value="UAH">UAH</option>
-                            <option value="USD">USD</option>
-                            <option value="UYU">UYU</option>
-                            <option value="VND">VND</option>
-                            <option value="ZAR">ZAR</option>
-            </select>
+
+              {/* Physical currency list */}
+              <select name="inputType"  onChange={onTypeChange}  value={type.inputType}>
+                <option value="USD" selected>USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="ETH">ETH</option>
+                <option value="BTC">BTC</option>
+              </select>
+              {/* Physical currency list ends here*/}
+
             </div>
             <div class="text-left input-tox">
             <Typography component="p" variant="p" className="emp-tag up" style={{marginTop : 6}}>
              From
             </Typography>
-            <input type="number" name="" class="ip1" id="input_amount" placeholder="0.0"/>
+            <input  name="input_currency_amount" class="ip1"  onInput={onInputChange}  value={state.input_currency_amount}/>
             </div>
         </div>
         <button id="exchange">
                 ↕   
             </button>
         <div class="currency">
-            <select name="" id="output_currency" class="special">
-                    <option value="SEK">SEK</option>
-                    <option value="SGD">SGD</option>
-                    <option value="THB">THB</option>
-                    <option value="TRY">TRY</option>
-                    <option value="TWD">TWD</option>
-                    <option value="UAH">UAH</option>
-                    <option value="USD" selected disabled>Select a token</option>
-                    <option value="UYU">UYU</option>
-                    <option value="VND">VND</option>
-                    <option value="ZAR">ZAR</option>
-            </select>   
+            {/* Cryptocurrency list */}
+            <select name="outputType"  class="special" onChange={onTypeChange}  value={type.outputType}>
+                <option value="BTC" selected>BTC</option>
+                <option value="ETH">ETH</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="USD">USD</option>
+            </select>  
+            {/* Cryptocurrency list ends here*/} 
              <div class="text-left input-box">
             <Typography component="p" variant="p" className="emp-tag up" style={{marginTop : 6}}>
              To
             </Typography>
-            <input type="number"  class="ip2" name="" id="input_amount" placeholder="0.0"/>
+            <input type="number"  class="ip2" name="output_currency_amount" id="abc"  onChange={onInputChange}  value={state.output_currency_amount}/>
             </div>
         </div>
-        <div class="result">
+        {/* <div class="result">
                 <a className="btn btn-connect">
                   Connect Wallet
                 </a>
-        </div>
+        </div> */}
         
     </div>
     </React.Fragment>
