@@ -156,12 +156,9 @@ const $ = require( "jquery" )( window );
                 )}
             <i class="fa fa-cogs" style={{position: 'absolute' , top : 20 , right: 20}} aria-hidden="true"></i>
         <div class="currency">
-          <div className="d-flex mt-4">
-                
-           <img src={Logo} className="mt-2" height="25px" width="25px"/>
-
+              
               {/* Physical currency list */}
-              <select name="inputType"  onChange={onTypeChange}  value={type.inputType}>
+              <select name="inputType" className="special" onChange={onTypeChange}  value={type.inputType}>
                 <option value="USD" selected>USD</option>
                 <option value="EUR">EUR</option>
                 <option value="GBP">GBP</option>
@@ -170,12 +167,12 @@ const $ = require( "jquery" )( window );
               </select>
               {/* Physical currency list ends here*/}
 
-            </div>
-            <div class="text-left input-tox">
+            
+            <div class="text-left input-box">
             <Typography component="p" variant="p" className="emp-tag up" style={{marginTop : 6}}>
              From
             </Typography>
-            <input  name="input_currency_amount" class="ip1"  onInput={onInputChange}  value={state.input_currency_amount}/>
+            <input  name="input_currency_amount" class="ip2"  onInput={onInputChange}  value={state.input_currency_amount}/>
             </div>
         </div>
         <button id="exchange">
