@@ -65,13 +65,13 @@ const $ = require( "jquery" )( window );
         outputType : 'BTC'
       });
 
-      const onTypeChange = event =>{
+      const onTypeChange = event =>{ // This function is called whenever user changes Input or output currency type. This function sets the new value for input/output type variables
         setResult({
           success: true
           
           });
         const {name, value} =event.target;
-        console.log("Type chnaged : ", name, value);
+        
 
         setType({
           ...type,
@@ -79,10 +79,10 @@ const $ = require( "jquery" )( window );
         });
       }
 
-      const  onInputChange = async event => {
+      const  onInputChange = async event => { // This function is called whenever user changes Input Amount. This function sets the new value for input amount variables
        
         const { name, value } = event.target;
-        console.log(name, value);
+        
       
          setState({
           ...state,
@@ -90,23 +90,22 @@ const $ = require( "jquery" )( window );
         });
         var config = {
             method: 'get',
-            url: 'https://api.cryptonator.com/api/ticker/'+type.outputType+'-'+type.inputType,
+            url: 'https://api.cryptonator.com/api/ticker/'+type.outputType+'-'+type.inputType, // This API fetches data from cryptonator according to pair provided
             
           };
           
           await axios(config)
           .then(function (response) {
 
-           //  console.log(response.data);
-           // console.log(value/response.data.ticker.price);
-            if(response.data.success)
+           
+            if(response.data.success) // If API return some value successfully
             {
                 setState({
                   input_currency_amount : value,
-                output_currency_amount : value/response.data.ticker.price
+                output_currency_amount : value/response.data.ticker.price // This line sets the result of conversion in output amount field
                 })
             }
-            else
+            else // If the API isn't successful or User have selected same input output currency
             {
               setResult({
                 success: false,
@@ -114,14 +113,14 @@ const $ = require( "jquery" )( window );
                 });
             }
            })
-          .catch(function (error) {
+          .catch(function (error) { 
             console.log("This is error : "+error);
           });
         
 
         };
 
-        
+        // This returns the frontend view to show to users
     return (
         <React.Fragment>
             <AppBar position="absolute" className={clsx(classes.appBar)}>
@@ -130,15 +129,13 @@ const $ = require( "jquery" )( window );
               <img src={Chogo} height="40px" width="40px"/>
               <a class="font-weight-bold">Swap</a>
               <a>Pool</a>
-              <a>UNI</a>
-              <a>Vote</a>
-              <a>Charts</a>
+              
           </div>
          
           <div className="d-flex" >
-             <a className="btn btn-uni">UNI</a>
+            
              <a className="btn btn-connect-2">
-                  Connect Wallet
+                  Contact US
                 </a>
                
           </div>
@@ -149,7 +146,7 @@ const $ = require( "jquery" )( window );
              <Typography component="p" variant="p" className="emp-tag " style={{position: 'absolute' , top : 20 , left: 20}}>
              Swap
             </Typography>
-            {result && (
+            {result && ( //The error is displayed using this state variable i.e. Result
                 <p className={`${result.success ? 'success' : 'error'}`}>
                 {result.message}
                 </p>
@@ -157,42 +154,42 @@ const $ = require( "jquery" )( window );
             <i class="fa fa-cogs" style={{position: 'absolute' , top : 20 , right: 20}} aria-hidden="true"></i>
         <div class="currency">
               
-              {/* Physical currency list */}
-              <select name="inputType" className="special" onChange={onTypeChange}  value={type.inputType}>
+              {/* Input currency list */}
+              <select name="inputType" className="special" onChange={onTypeChange}  value={type.inputType}> {/* OnTypeChange is called whenever input currency is changed*/}
                 <option value="USD" selected>USD</option>
                 <option value="EUR">EUR</option>
                 <option value="GBP">GBP</option>
                 <option value="ETH">ETH</option>
                 <option value="BTC">BTC</option>
               </select>
-              {/* Physical currency list ends here*/}
+              {/* Input currency list ends here*/}
 
             
             <div class="text-left input-box">
             <Typography component="p" variant="p" className="emp-tag up" style={{marginTop : 6}}>
              From
             </Typography>
-            <input  name="input_currency_amount" class="ip2"  onInput={onInputChange}  value={state.input_currency_amount}/>
+            <input  name="input_currency_amount" class="ip2"  onInput={onInputChange}  value={state.input_currency_amount}/> {/* OnInputChange is called whenever input amount is changed*/}
             </div>
         </div>
         <button id="exchange">
-                ↕   
+                  
             </button>
         <div class="currency">
-            {/* Cryptocurrency list */}
-            <select name="outputType"  class="special" onChange={onTypeChange}  value={type.outputType}>
+            {/* Outputcurrency list */}
+            <select name="outputType"  class="special" onChange={onTypeChange}  value={type.outputType}> {/* OnTypeChange is called whenever output currency is changed*/}
                 <option value="BTC" selected>BTC</option>
                 <option value="ETH">ETH</option>
                 <option value="EUR">EUR</option>
                 <option value="GBP">GBP</option>
                 <option value="USD">USD</option>
             </select>  
-            {/* Cryptocurrency list ends here*/} 
+            {/* Outputcurrency list ends here*/} 
              <div class="text-left input-box">
             <Typography component="p" variant="p" className="emp-tag up" style={{marginTop : 6}}>
              To
             </Typography>
-            <input type="number"  class="ip2" name="output_currency_amount" id="abc"  onChange={onInputChange}  value={state.output_currency_amount}/>
+            <input type="number"  class="ip2" name="output_currency_amount" id="abc"    value={state.output_currency_amount}/>
             </div>
         </div>
         {/* <div class="result">
